@@ -5,4 +5,4 @@
 git config --global user.name 張泰瑋
 git config --global user.email tlrzhang@gmail.com
 點選檔案總管，新增檔案，重新命名:檔名.js
-寫完程式後點選原始檔控制>填寫訊息>提交
+寫完程式後點選原始檔控制>填寫訊息>提交>同步變更
