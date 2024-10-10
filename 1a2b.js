@@ -77,5 +77,13 @@ do {
     }
   } while (!isWin); // 如果未勝利則繼續
 
-  var playAgain = readline.question("Do you want to play again? (y/n): "); // 問玩家是否想再玩一次
-} while (playAgain.toLowerCase() === 'y'); // 如果玩家輸入 y，則重新開始遊戲
+  var playAgain;
+  do {
+    playAgain = readline.question("Do you want to play again? (y/n): "); // 問玩家是否想再玩一次
+    playAgain = playAgain.toLowerCase(); // 將輸入轉換為小寫
+    if (playAgain !== 'y' && playAgain !== 'n') {
+      console.log("Invalid input: Please enter 'y' to play again or 'n' to quit.");
+    }
+  } while (playAgain !== 'y' && playAgain !== 'n'); // 重複詢問直到輸入 y 或 n
+
+} while (playAgain === 'y'); // 如果玩家輸入 y，則重新開始遊戲
