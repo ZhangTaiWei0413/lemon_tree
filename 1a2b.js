@@ -95,3 +95,4 @@ do {
   } while (playAgain !== 'y' && playAgain !== 'n'); // 重複詢問直到輸入 y 或 n
 
 } while (playAgain === 'y'); // 玩家輸入 y則重新開始
+//8

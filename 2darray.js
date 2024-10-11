@@ -42,3 +42,4 @@ for(var _row=0;_row<row;_row++)
     x=x+7;
 }
 console.log(dynaAry2d);
+//8
