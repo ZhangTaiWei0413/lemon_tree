@@ -1,7 +1,7 @@
 //var ary2d=[
-    [1,2,3], //index 0
-    [4,5,6], //index 1
-    [7,8,9]  //index 2
+    //[1,2,3], //index 0
+    //[4,5,6], //index 1
+    //[7,8,9]  //index 2
 //];
 //row
 //ary2d[1][2]
@@ -53,7 +53,7 @@ var dynaAry2d = [];//主陣列
 for (var _row = 0; _row < row; _row++) {
     dynaAry2d.push([]);
     for (var _col = 0; _col < col; _col++) {
-        dynaAry2d[_row].push(`${_row},${_col}`);
+        dynaAry2d[_row].push(`${_row},${_col}`);//可以改成:dynaAry2d[_row].push(_row + ',' + _col);
     }
 }
 
