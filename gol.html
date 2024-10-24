@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoL</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        canvas {
+            border: 1px solid black;
+        }
+        .err-msg {
+            color: red;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <label for="gridSzIn">Size</label>
+        <input type="number" id="gridSzIn" value="30" min="1">
+        <span id="gridSzErr" class="err-msg"></span>
+    </div>
+    <div>
+        <label for="spdIn">Speed</label>
+        <input type="number" id="spdIn" value="100" min="1">
+        <span id="spdErr" class="err-msg"></span>
+    </div>
+    <div>
+        <label for="dnsIn">Density</label>
+        <input type="number" id="dnsIn" value="50" min="0" max="100">
+        <span id="dnsErr" class="err-msg"></span>
+    </div>
+    <button id="genBtn">Generate</button>
+    <button id="strtBtn">Start/Pause</button>
+    <button id="clrBtn">Clear</button>
+    <canvas id="canv" width="600" height="600"></canvas>
+
+    <script>
+        const canv = document.getElementById('canv');
+        const ctx = canv.getContext('2d');
+        const row = 30, col = 30;
+        let celS = canv.width / col, G = [], run = false, spd = 100;
+
+        const initG = (dns = 0) => {
+            G = Array.from({ length: row }, () => 
+                Array.from({ length: col }, () => Math.random() < dns ? 1 : 0));
+            drawG();
+        };
+
+        const drawG = () => {
+            ctx.clearRect(0, 0, canv.width, canv.height);
+            G.forEach((r, rowI) => r.forEach((c, colI) => {
+                ctx.fillStyle = c ? 'red' : 'white';
+                ctx.fillRect(colI * celS, rowI * celS, celS, celS);
+                ctx.strokeRect(colI * celS, rowI * celS, celS, celS);
+            }));
+        };
+
+        const coutNeib = (rowI, colI) =>
+            [-1, 0, 1].reduce((sum, i) =>
+                sum + [-1, 0, 1].reduce((acc, j) => 
+                    acc + (i || j ? G[rowI + i]?.[colI + j] || 0 : 0), 0), 0);
+
+        const upG = () => {
+            G = G.map((r, rowI) => 
+                r.map((c, colI) => {
+                    const neib = coutNeib(rowI, colI);
+                    return c ? (neib === 2 || neib === 3 ? 1 : 0) : (neib === 3 ? 1 : 0);
+                })
+            );
+        };
+
+        const gLoop = () => {
+            if (!run) return;
+            drawG();
+            upG();
+            setTimeout(() => requestAnimationFrame(gLoop), spd);
+        };
+
+        document.getElementById('gridSzIn').addEventListener('input', ({ target }) => {
+            const err = document.getElementById('gridSzErr');
+            if (target.value <= 0 || !Number.isInteger(+target.value)) {
+                err.textContent = 'Error:non-positive integer';
+            } else {
+                err.textContent = '';
+                const newSize = parseInt(target.value);
+                celS = canv.width / newSize; 
+                initG(); 
+            }
+});
+
+        document.getElementById('spdIn').addEventListener('input', ({ target }) => {
+            const err = document.getElementById('spdErr');
+            if (target.value <= 0 || !Number.isInteger(+target.value)) {
+                err.textContent = 'Error:non-positive integer';
+            } else {
+                err.textContent = '';
+                spd = +target.value;
+            }
+        });
+
+        document.getElementById('dnsIn').addEventListener('input', ({ target }) => {
+            const err = document.getElementById('dnsErr');
+            if (target.value < 0 || target.value > 100 || !Number.isInteger(+target.value)) {
+                err.textContent = 'Error:not between 0 and 100';
+            } else {
+                err.textContent = '';
+            }
+        });
+
+        document.getElementById('genBtn').addEventListener('click', () => {
+            const dns = document.getElementById('dnsIn').value / 100;
+            initG(dns);
+        });
+
+        document.getElementById('strtBtn').addEventListener('click', () => {
+            run = !run;
+            if (run) gLoop();
+        });
+
+        document.getElementById('clrBtn').addEventListener('click', () => {
+            run = false;
+            initG();
+        });
+
+        canv.addEventListener('click', ({ offsetX, offsetY }) => {
+            const rowI = Math.floor(offsetY / celS), colI = Math.floor(offsetX / celS);
+            if (rowI >= 0 && rowI < row && colI >= 0 && colI < col) {
+                G[rowI][colI] = G[rowI][colI] ? 0 : 1;
+                drawG();
+            }
+        });
+
+        initG();
+    </script>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game of Life</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;/* 設定網頁字體樣式 */
+            display: flex;/* 設為"彈性盒子" 總之就是進行網頁控制很方便 */
+            flex-direction: column;/* 彈性佈局的方向設為直 */
+            align-items: center;/* 物件設為水平居中對齊 */
+            margin-top: 20px;/* 物件與頁頂保持距離 */
+        }
+        #controls {
+            margin-bottom: 20px;/* 物件與頁底保持距離 */
+        }
+        canvas {
+            border: 1px solid black;/* 畫紙加邊框 */
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <label for="gridSizeInput">網格大小（每邊格子數）</label>
+        <input type="number" id="gridSizeInput" value="30" min="1">
+        <span id="gridSizeError" class="error-message"></span>
+
+        <label for="speedInput">速度（毫秒）</label>
+        <input type="number" id="speedInput" value="100" min="1">
+        <span id="speedError" class="error-message"></span>
+
+        <label for="densityInput">密度（0-100）</label>
+        <input type="number" id="densityInput" value="50" min="0" max="100">
+        <span id="densityError" class="error-message"></span>
+
+        <button id="generateButton">生成</button>
+        <button id="startButton">開始/暫停</button>
+        <button id="clearButton">清除</button>
+    </div>
+    <canvas id="gameCanvas" width="600" height="600"></canvas>
+    <script src="gameoflife.js"></script>
+</body>
+</html>

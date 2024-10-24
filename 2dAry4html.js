@@ -3,7 +3,7 @@ var ary2d=[
     [1,0,1,1,0,0], //index 1
     [1,0,1,0,0,1], //index 2
     [1,0,1,1,0,0], //index 3
-    [1,0,1,0,0,1]   //index 4
+    [1,0,1,0,0,1]  //index 4
 ];
 
 var row=ary2d.length;
