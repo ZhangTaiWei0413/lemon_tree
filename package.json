@@ -1,5 +1,14 @@
 {
   "dependencies": {
     "readline-sync": "^1.4.10"
-  }
+  },
+  "name": "c",
+  "version": "1.0.0",
+  "description": "9/27\r 每天上課安裝git&node，安裝後點選終端機>新增終端 打node跟git啟用\r 在程式登入github帳號\r 點選終端機>新增終端 輸入:\r git config --global user.name 張泰瑋\r git config --global user.email tlrzhang@gmail.com",
+  "main": "1a2b.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }

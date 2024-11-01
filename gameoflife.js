@@ -1,165 +1,202 @@
-var canvas = document.getElementById('gameCanvas');//畫紙
-var ctx = canvas.getContext('2d');//畫筆
+// 取得畫布和繪圖上下文
+var canvas = document.getElementById('gameCanvas');
+var ctx = canvas.getContext('2d');
 
+// 初始化遊戲參數
 var rows = 30;
-var cols = 30;//預設長寬
-var cellSize = canvas.width / cols;//計算畫紙切割
-var grid = [];//存取生命狀態
-var gameRunning = 0;  //Bool
+var cols = 30;
+var cellSize = canvas.width / cols;
+var grid = [];
+var gameRunning = 0;
 var gameSpeed = 100;
 
-initializeGrid();//建立空畫紙
+// 初始化網格
+initializeGrid();
 
-document.getElementById('gridSizeInput').addEventListener('input', function() {//addEventListener監聽器，只要('條件',成立就會執行function()
-    var size = this.value;//this為當前觸發事件的元素(此為輸入欄).value為欄內當前值
-    var errorElement = document.getElementById('gridSizeError');//獲取gridSizeError
-    if (isNaN(size) || size <= 0 || parseInt(size) != size) {//是否「不是數字」||是否小於等於 0||整數化後是否有變化
-        this.setCustomValidity('必須是正整數');//氣泡警告欄
-        errorElement.textContent = '必須是正整數';//gridSizeError警告語
-    } else {
-        this.setCustomValidity('');
-        errorElement.textContent = '';
-        rows = parseInt(size);
-        cols = rows;
-        cellSize = canvas.width / cols;//轉化細胞大小
-        initializeGrid();
-        this.value = size;//自動修正xx.0=xx
-    }
+// 監聽網格大小輸入框的變化
+document.getElementById('gridSizeInput').addEventListener('input', function() {
+ var size = this.value;
+ var errorElement = document.getElementById('gridSizeError');
+ if (isNaN(size) || size <= 0 || parseInt(size) != size) {
+ this.setCustomValidity('必須是正整數');
+ errorElement.textContent = '必須是正整數';
+ } else {
+ this.setCustomValidity('');
+ errorElement.textContent = '';
+ rows = parseInt(size);
+ cols = rows;
+ cellSize = canvas.width / cols;
+ initializeGrid();
+ this.value = size;
+ }
 });
 
+// 監聽速度輸入框的變化
 document.getElementById('speedInput').addEventListener('input', function() {
-    var speed = this.value;//this為當前觸發事件的元素(此為輸入欄).value為欄內當前值
-    var errorElement = document.getElementById('speedError');
-    if (isNaN(speed) || speed <= 0 || parseInt(speed) != speed) {//是否「不是數字」||是否小於等於 0||整數化後是否有變化
-        this.setCustomValidity('必須是正整數');
-        errorElement.textContent = '必須是正整數';
-    } else {
-        this.setCustomValidity('');
-        errorElement.textContent = '';
-        gameSpeed = parseInt(speed);
-        this.value = speed;//自動修正xx.0=xx
-    }
+ var speed = this.value;
+ var errorElement = document.getElementById('speedError');
+ if (isNaN(speed) || speed <= 0 || parseInt(speed) != speed) {
+ this.setCustomValidity('必須是正整數');
+ errorElement.textContent = '必須是正整數';
+ } else {
+ this.setCustomValidity('');
+ errorElement.textContent = '';
+ gameSpeed = parseInt(speed);
+ this.value = speed;
+ }
 });
 
+// 監聽密度輸入框的變化
 document.getElementById('densityInput').addEventListener('input', function() {
-    var density = this.value;//this為當前觸發事件的元素(此為輸入欄).value為欄內當前值
-    var errorElement = document.getElementById('densityError');
-    if (isNaN(density) || density < 0 || density > 100 || parseInt(density) != density) {//是否「不是數字」||是否小於 0||是否大於100||整數化後是否有變化
-        this.setCustomValidity('必須是 0 到 100 之間的正整數');
-        errorElement.textContent = '必須是 0 到 100 之間的正整數';
-    } else {
-        this.setCustomValidity('');
-        errorElement.textContent = '';
-        this.value = density;//存活率，自動修正xx.0=xx
-    }
+ var density = this.value;
+ var errorElement = document.getElementById('densityError');
+ if (isNaN(density) || density < 0 || density > 100 || parseInt(density) != density) {
+ this.setCustomValidity('必須是 0 到 100 之間的正整數');
+ errorElement.textContent = '必須是 0 到 100 之間的正整數';
+ } else {
+ this.setCustomValidity('');
+ errorElement.textContent = '';
+ this.value = density;
+ }
 });
 
+// 監聽「產生」按鈕的點擊事件
 document.getElementById('generateButton').addEventListener('click', function() {
-    gameRunning = 0; // 停止遊戲
-    var density = parseInt(document.getElementById('densityInput').value);
-    if (isNaN(density) || density < 0 || density > 100) {
-        document.getElementById('densityError').textContent = '必須是 0 到 100 之間的正整數';
-        return;
-    }
-    grid = createRandomGrid(density / 100);
-    drawGrid();
+ gameRunning = 0; // 停止遊戲
+ var density = parseInt(document.getElementById('densityInput').value);
+ if (isNaN(density) || density < 0 || density > 100) {
+ document.getElementById('densityError').textContent = '必須是 0 到 100 之間的正整數';
+ return;
+ }
+ grid = createRandomGrid(density / 100);
+ drawGrid(); // 繪製整個網格
 });
 
+// 監聽「開始/暫停」按鈕的點擊事件
 document.getElementById('startButton').addEventListener('click', function() {
-    gameRunning = !gameRunning;
-    if (gameRunning) {
-        gameLoop();
-    }
+ gameRunning = !gameRunning;
+ if (gameRunning) {
+ gameLoop();
+ }
 });
 
+// 監聽「清除」按鈕的點擊事件
 document.getElementById('clearButton').addEventListener('click', function() {
-    gameRunning = 0;
-    initializeGrid();
+ gameRunning = 0;
+ initializeGrid();
 });
 
-canvas.addEventListener('click', function(event) {//監聽，如果畫紙被點擊
-    var rect = canvas.getBoundingClientRect();//獲取畫紙位置信息
-    var x = event.clientX - rect.left;//使用者點擊的位置相對於畫紙左側的水平距離
-    var y = event.clientY - rect.top;//使用者點擊的位置相對於畫紙上側的垂直距離
-    var col = Math.floor(x / cellSize);//水平距離在畫紙上對應第幾列
-    var row = Math.floor(y / cellSize);//垂直距離在畫紙上對應第幾行
-    grid[row][col] = grid[row][col] == 0 ? 1 : 0;//切換格子狀態
-    drawGrid();
+// 監聽畫布的點擊事件
+canvas.addEventListener('click', function(event) {
+ var rect = canvas.getBoundingClientRect();
+ var x = event.clientX - rect.left;
+ var y = event.clientY - rect.top;
+ var col = Math.floor(x / cellSize);
+ var row = Math.floor(y / cellSize);
+ if (row >= 0 && row < rows && col >= 0 && col < cols) {
+ grid[row][col] = grid[row][col] == 0 ? 1 : 0;
+ drawCell(row, col); // 只繪製被點擊的細胞
+ }
 });
 
-function initializeGrid() {//清除
-    grid = createEmptyGrid();
-    drawGrid();
+// 初始化網格函數
+function initializeGrid() {
+ grid = createEmptyGrid();
+ drawGrid();
 }
 
+// 建立空網格
 function createEmptyGrid() {
-    var arr = [];
-    for (var i = 0; i < rows; i++) {
-        arr[i] = [];//生成水平行
-        for (var j = 0; j < cols; j++) {
-            arr[i][j] = 0;//生成垂直列
-        }
-    }
-    return arr;
+ var arr = [];
+ for (var i = 0; i < rows; i++) {
+ arr[i] = [];
+ for (var j = 0; j < cols; j++) {
+ arr[i][j] = 0;
+ }
+ }
+ return arr;
 }
 
+// 建立隨機網格
 function createRandomGrid(density) {
-    var arr = [];
-    for (var i = 0; i < rows; i++) {
-        arr[i] = [];
-        for (var j = 0; j < cols; j++) {
-            arr[i][j] = Math.random() < density ? 1 : 0;//成立表示"活"，反之為"死"
-        }
-    }
-    return arr;
+ var arr = [];
+ for (var i = 0; i < rows; i++) {
+ arr[i] = [];
+ for (var j = 0; j < cols; j++) {
+ arr[i][j] = Math.random() < density ? 1 : 0;
+ }
+ }
+ return arr;
 }
 
+// 繪製單一細胞
+function drawCell(row, col) {
+ var x = col * cellSize;
+ var y = row * cellSize;
+ ctx.fillStyle = grid[row][col] == 1 ? 'red' : 'white';
+ ctx.fillRect(x, y, cellSize, cellSize);
+ ctx.strokeRect(x, y, cellSize, cellSize);
+}
+
+// 繪製整個網格
 function drawGrid() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);//清空畫紙
-    for (var row = 0; row < rows; row++) {
-        for (var col = 0; col < cols; col++) {
-            ctx.fillStyle = grid[row][col] == 1 ? 'red' : 'white';//從grid判斷該格子的狀態並賦予顏色
-            ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-            ctx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
-        }
-    }
+ ctx.clearRect(0, 0, canvas.width, canvas.height);
+ for (var row = 0; row < rows; row++) {
+ for (var col = 0; col < cols; col++) {
+ drawCell(row, col);
+ }
+ }
 }
 
+// 更新網格狀態
 function updateGrid() {
-    var newGrid = createEmptyGrid();
-    for (var row = 0; row < rows; row++) {
-        for (var col = 0; col < cols; col++) {
-            var neighbors = countNeighbors(row, col);//確認該格附近還活著的鄰居
-            if (grid[row][col] == 1) {//若該格為活
-                newGrid[row][col] = (neighbors == 2 || neighbors == 3) ? 1 : 0;//若鄰居數為2/3則活 反之死
-            } else {//若該格為死
-                newGrid[row][col] = (neighbors == 3) ? 1 : 0;//若鄰居數為3則活 反之死
-            }
-        }
-    }
-    grid = newGrid;//更新狀態至新grid陣列
+ var newGrid = createEmptyGrid();
+ var cellsToUpdate = []; // 記錄狀態改變的細胞
+ for (var row = 0; row < rows; row++) {
+ for (var col = 0; col < cols; col++) {
+ var neighbors = countNeighbors(row, col);
+ var currentState = grid[row][col];
+ var newState = currentState;
+ if (currentState == 1) {
+ newState = (neighbors == 2 || neighbors == 3) ? 1 : 0;
+ } else {
+ newState = (neighbors == 3) ? 1 : 0;
+ }
+ newGrid[row][col] = newState;
+ if (newState != currentState) {
+ cellsToUpdate.push({ row: row, col: col });
+ }
+ }
+ }
+ grid = newGrid;
+ // 只繪製狀態改變的細胞
+ for (var i = 0; i < cellsToUpdate.length; i++) {
+ var cell = cellsToUpdate[i];
+ drawCell(cell.row, cell.col);
+ }
 }
 
+// 計算指定細胞的活鄰居數量
 function countNeighbors(row, col) {
     var count = 0;
-    for (var i = -1; i <= 1; i++) {//y座標
-        for (var j = -1; j <= 1; j++) {//x座標
-            if (i == 0 && j == 0) continue;//0.0為目標格本身 跳過計算
-            var newRow = row + i;
-            var newCol = col + j;//依次標記並判斷鄰居座標
-            if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {//確保不會超出上下左右(邊界)
-                count += grid[newRow][newCol];//若鄰居為活則+1
-            }
-        }
+    for (var i = -1; i <= 1; i++) {
+    for (var j = -1; j <= 1; j++) {
+    if (i == 0 && j == 0) continue;
+    var newRow = row + i;
+    var newCol = col + j;
+    if (newRow >= 0 && newRow < rows && newCol >= 0 && newCol < cols) {
+    count += grid[newRow][newCol];
     }
-    return count;//回傳並統計
-}
-
-function gameLoop() {
-    if (!gameRunning) return;//如果遊戲停止則不繼續程式
-    drawGrid();//繪製當前畫紙內容
-    updateGrid();//更新網格狀態
-    setTimeout(function() {//在一段指定的延遲時間後執行
-        requestAnimationFrame(gameLoop);//在下一次畫面更新時調用指定函數
-    }, gameSpeed);//會受到玩家設置速度影響
-}
+    }
+    }
+    return count;
+   }
+   
+   // 遊戲主循環
+   function gameLoop() {
+    if (!gameRunning) return;
+    updateGrid();
+    setTimeout(function() {
+    requestAnimationFrame(gameLoop);
+    }, gameSpeed);
+   }
