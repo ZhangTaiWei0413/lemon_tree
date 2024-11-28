@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Maze Solver Visualization</title>
+    <style>
+        #maze {
+            display: grid;
+            grid-template-columns: repeat(12, 20px);
+        }
+        .cell {
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 1px solid black;
+        }
+        .wall {
+            background-color: black;
+        }
+        .visited {
+            background-color: yellow;
+        }
+        .dead-end {
+            background-color: red;
+        }
+        .solution {
+            background-color: green;
+        }
+    </style>
+</head>
+<body>
+    <h1>Maze Solver Visualization</h1>
+    <div id="maze"></div>
+    <button id="goButton">Go</button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const goButton = document.getElementById("goButton");
+            goButton.addEventListener("click", startSolving);
+        });
+    </script>
+    <script src="maze.js"></script>
+</body>
+</html>
