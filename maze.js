@@ -188,7 +188,7 @@ function shuffleDirections(directions) {
     }
     return directions; // 返回打亂順序的方向數組
     //先選擇一個隨機方向，然後將該方向與最後一個方向交換，然後繼續選擇隨機方向，直到所有方向都被選擇過
-
+}
 function isValidMove(row, col) {
     return row >= 0 && row < MAZE.length && col >= 0 && col < MAZE[0].length && MAZE[row][col] === 0; // 檢查是否在邊界內且未訪問
 }
@@ -206,7 +206,6 @@ document.addEventListener("DOMContentLoaded", () => {
     goButton.addEventListener("click", startSolving); // 為按鈕添加點擊事件，觸發 startSolving
 });
 
-}
 
 //說明一下兩個程式碼的差異:
 //第一個程式碼是用JavaScript語言實現的，是一個簡單的迷宮解決算法，通過堆疊來記錄路徑，並且使用遞歸的方式來尋找下一步。
