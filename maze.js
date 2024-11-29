@@ -73,7 +73,7 @@ class Point {
     }
 }
 
-const mazeoriginal = [
+var mazeoriginal = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1], 
     [1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 1, 1],
@@ -139,13 +139,13 @@ function startSolving() {// 當點擊「go」按鈕時觸發
 }
 
 function solveStep() {// 解決步驟
+    step = Stack[Stack.length - 1]; // 步驟等於堆疊的最後一個元素，意思是step等於當前步驟
+
     if (Stack.length === 0) { // 如果堆疊為空，表示無法找到解決方案
         console.log("No solution!"); // 輸出「無解」信息
         clearInterval(intervalId); // 停止計時器
         return;
     }
-
-    step = Stack[Stack.length - 1]; // 步驟等於堆疊的最後一個元素，意思是step等於當前步驟
 
     if (step.isEnd()) { // 如果當前步驟是終點
         console.log("Done!"); // 輸出「完成」信息
