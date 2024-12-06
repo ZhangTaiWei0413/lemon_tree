@@ -24,7 +24,6 @@ var MAZE2 = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 ]; //1,1  end:8,10
 
-// 深拷貝函數
 function deepCopyArray(array) {
     return array.map(row => [...row]);
 }
